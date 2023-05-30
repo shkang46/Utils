@@ -19,4 +19,24 @@ public with sharing class Utils {
             throw new AuraHandledException(e.getMessage());
         }
     }
+
+    @AuraEnabled
+    public static Map<String, String> getAllFieldsByObjectApiName(String objectApiName) {
+        try {
+            Map<String, Schema.SObjectField> fieldsSchemaMap = Schema.getGlobalDescribe()
+                .get(objectApiName)
+                .getDescribe()
+                .fields.getMap();
+            Map<String, String> result = new Map<String, String>();
+
+            for (Schema.SObjectField fieldValue : fieldsSchemaMap.values()) {
+                Schema.DescribeFieldResult fieldResult = fieldValue.getDescribe();
+                result.put(fieldResult.getName(), fieldResult.getLabel());
+            }
+
+            return result;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
 }
